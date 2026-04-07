@@ -13,6 +13,24 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true
+    },
+    // ✅ Role add kiya — admin ya employee
+    role: {
+        type: String,
+        enum: ['admin', 'employee'],
+        default: 'employee'
+    },
+    isVerified: {
+        type: Boolean,
+        default: false
+    },
+    otp: {
+        type: String,
+        default: null
+    },
+    otpExpiry: {
+        type: Date,
+        default: null
     }
 })
 

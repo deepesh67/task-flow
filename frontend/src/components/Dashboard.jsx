@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useOutletContext } from 'react-router-dom'
-import { Home, Plus, Circle, Flame } from 'lucide-react'
+import { Home, Circle, Flame } from 'lucide-react'
 import axios from 'axios'
 
 const priorityConfig = {
@@ -12,9 +12,10 @@ const priorityConfig = {
 const Dashboard = () => {
   const { tasks = [], refreshTasks } = useOutletContext()
   const [filter, setFilter] = useState('All')
-  const [showForm, setShowForm] = useState(false)
-  const [form, setForm] = useState({ title: '', description: '', priority: 'low', duedate: '' })
-  const [submitting, setSubmitting] = useState(false)
+
+  // ✅ Employee ko add/delete nahi karne denge
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'))
+  const isAdmin = currentUser?.role === 'admin'
 
   const totalTasks = tasks.length
   const lowCount = tasks.filter(t => t.priority === 'low').length
@@ -45,23 +46,6 @@ const Dashboard = () => {
     } catch (err) { console.error(err) }
   }
 
-  const handleAddTask = async (e) => {
-    e.preventDefault()
-    if (!form.title.trim()) return
-    setSubmitting(true)
-    try {
-      const token = localStorage.getItem('token')
-      await axios.post('http://localhost:4000/api/tasks/gp',
-        form,
-        { headers: { Authorization: `Bearer ${token}` } }
-      )
-      setForm({ title: '', description: '', priority: 'low', duedate: '' })
-      setShowForm(false)
-      refreshTasks()
-    } catch (err) { console.error(err) }
-    finally { setSubmitting(false) }
-  }
-
   const handleDelete = async (id) => {
     try {
       const token = localStorage.getItem('token')
@@ -82,49 +66,7 @@ const Dashboard = () => {
           </h1>
           <p className="text-sm text-gray-500 mt-0.5">Manage your tasks efficiently</p>
         </div>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white rounded-xl text-sm font-medium hover:opacity-90 transition"
-        >
-          <Plus size={16} /> Add New Task
-        </button>
       </div>
-
-      {/* Add Task Form */}
-      {showForm && (
-        <form onSubmit={handleAddTask} className="bg-white rounded-xl p-4 border border-purple-100 shadow-sm space-y-3">
-          <input
-            type="text" placeholder="Task title *"
-            value={form.title} onChange={e => setForm({ ...form, title: e.target.value })}
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-400"
-          />
-          <input
-            type="text" placeholder="Description"
-            value={form.description} onChange={e => setForm({ ...form, description: e.target.value })}
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-400"
-          />
-          <div className="flex gap-3">
-            <select
-              value={form.priority} onChange={e => setForm({ ...form, priority: e.target.value })}
-              className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-400"
-            >
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-            </select>
-            <input
-              type="date" value={form.duedate} onChange={e => setForm({ ...form, duedate: e.target.value })}
-              className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-400"
-            />
-          </div>
-          <div className="flex gap-2 justify-end">
-            <button type="button" onClick={() => setShowForm(false)} className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">Cancel</button>
-            <button type="submit" disabled={submitting} className="px-4 py-2 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50">
-              {submitting ? 'Adding...' : 'Add Task'}
-            </button>
-          </div>
-        </form>
-      )}
 
       {/* Priority Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -158,7 +100,6 @@ const Dashboard = () => {
               </button>
             ))}
           </div>
-          
         </div>
 
         <div className="space-y-3">
@@ -185,7 +126,10 @@ const Dashboard = () => {
                   <span>🕐 Created {new Date(task.createdAt).toLocaleDateString()}</span>
                 </div>
               </div>
-              <button onClick={() => handleDelete(task._id)} className="text-gray-300 hover:text-red-400 text-lg shrink-0">×</button>
+              {/* ✅ Sirf admin delete kar sakta hai */}
+              {isAdmin && (
+                <button onClick={() => handleDelete(task._id)} className="text-gray-300 hover:text-red-400 text-lg shrink-0">×</button>
+              )}
             </div>
           ))}
         </div>

@@ -13,6 +13,10 @@ const CompletedTasks = () => {
   const { tasks = [], refreshTasks } = useOutletContext()
   const [sort, setSort] = useState('newest')
 
+  // ✅ Role check
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'))
+  const isAdmin = currentUser?.role === 'admin'
+
   const completedTasks = tasks.filter(t => t.completed)
 
   const sortedTasks = [...completedTasks].sort((a, b) => {
@@ -48,7 +52,6 @@ const CompletedTasks = () => {
 
   return (
     <div className="space-y-4">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
@@ -71,7 +74,6 @@ const CompletedTasks = () => {
         </div>
       </div>
 
-      {/* Task Cards */}
       <div className="space-y-3">
         {sortedTasks.length === 0 && (
           <div className="text-center py-10 text-gray-400 text-sm">No completed tasks yet 💪</div>
@@ -80,11 +82,20 @@ const CompletedTasks = () => {
           <div key={task._id} className="bg-white rounded-xl p-4 border border-green-100 shadow-sm">
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-start gap-3 flex-1 min-w-0">
-                <button onClick={() => handleUncomplete(task)} className="mt-0.5 shrink-0" title="Mark as pending">
-                  <div className="w-5 h-5 rounded-full border-2 border-green-500 bg-green-500 flex items-center justify-center">
-                    <div className="w-2 h-2 bg-white rounded-full" />
+                {/* ✅ Sirf admin uncomplete kar sakta hai */}
+                {isAdmin ? (
+                  <button onClick={() => handleUncomplete(task)} className="mt-0.5 shrink-0" title="Mark as pending">
+                    <div className="w-5 h-5 rounded-full border-2 border-green-500 bg-green-500 flex items-center justify-center">
+                      <div className="w-2 h-2 bg-white rounded-full" />
+                    </div>
+                  </button>
+                ) : (
+                  <div className="mt-0.5 shrink-0">
+                    <div className="w-5 h-5 rounded-full border-2 border-green-500 bg-green-500 flex items-center justify-center">
+                      <div className="w-2 h-2 bg-white rounded-full" />
+                    </div>
                   </div>
-                </button>
+                )}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <p className="text-sm font-medium text-gray-400 line-through">{task.title}</p>
@@ -99,7 +110,10 @@ const CompletedTasks = () => {
                   </div>
                 </div>
               </div>
-              <button onClick={() => handleDelete(task._id)} className="text-gray-300 hover:text-red-400 text-xl shrink-0">×</button>
+              {/* ✅ Sirf admin delete kar sakta hai */}
+              {isAdmin && (
+                <button onClick={() => handleDelete(task._id)} className="text-gray-300 hover:text-red-400 text-xl shrink-0">×</button>
+              )}
             </div>
           </div>
         ))}

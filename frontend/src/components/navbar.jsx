@@ -40,13 +40,12 @@ const Navbar = ({user, onLogout}) => {
           <div ref={menuref} className='relative'>
             <button onClick={handleMenuToggle} className='flex items-center gap-2 px-3 py-2 rounded-full cursor-pointer hover:bg-purple-50 transition-colors duration-300 border border-transparent hover:border-purple-200'>
               <div className='relative'>
-                {user?.avatar ? (
-                  <img src={user.avatar} alt="avatar" className='w-9 h-9 rounded-full shadow-sm'/>
-                ) : (
-                  <div className='w-8 h-8 flex items-center justify-center rounded-full bg-gradient-to-br from-fuchsia-500 to-purple-600 text-white font-semibold shadow-md'>
-                    {user?.name?.[0]?.toUpperCase() || ''}
-                  </div>
-                )}
+
+                {/* ✅ Ab sirf initials dikhega — naam badlega toh turant update hoga */}
+                <div className='w-9 h-9 flex items-center justify-center rounded-full bg-gradient-to-br from-fuchsia-500 to-purple-600 text-white font-semibold shadow-md'>
+                  {user?.name?.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || 'U'}
+                </div>
+
                 <div className='absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 rounded-full border-2 border-white animate-pulse'/>
               </div>
               <div className='hidden md:block text-left'>

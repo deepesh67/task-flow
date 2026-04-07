@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useOutletContext } from 'react-router-dom'
-import { ListChecks, Plus } from 'lucide-react'
+import { ListChecks } from 'lucide-react'
 import axios from 'axios'
 
 const priorityConfig = {
@@ -12,9 +12,10 @@ const priorityConfig = {
 const PendingTasks = () => {
   const { tasks = [], refreshTasks } = useOutletContext()
   const [sort, setSort] = useState('newest')
-  const [showForm, setShowForm] = useState(false)
-  const [form, setForm] = useState({ title: '', description: '', priority: 'low', duedate: '' })
-  const [submitting, setSubmitting] = useState(false)
+
+  // ✅ Role check
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'))
+  const isAdmin = currentUser?.role === 'admin'
 
   const pendingTasks = tasks.filter(t => !t.completed)
 
@@ -27,22 +28,6 @@ const PendingTasks = () => {
     }
     return 0
   })
-
-  const handleAddTask = async (e) => {
-    e.preventDefault()
-    if (!form.title.trim()) return
-    setSubmitting(true)
-    try {
-      const token = localStorage.getItem('token')
-      await axios.post('http://localhost:4000/api/tasks/gp', form,
-        { headers: { Authorization: `Bearer ${token}` } }
-      )
-      setForm({ title: '', description: '', priority: 'low', duedate: '' })
-      setShowForm(false)
-      refreshTasks()
-    } catch (err) { console.error(err) }
-    finally { setSubmitting(false) }
-  }
 
   const handleComplete = async (task) => {
     try {
@@ -91,45 +76,6 @@ const PendingTasks = () => {
         </div>
       </div>
 
-      {/* Add Task Button */}
-      <button
-        onClick={() => setShowForm(!showForm)}
-        className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-purple-200 rounded-xl text-purple-500 text-sm font-medium hover:border-purple-400 hover:bg-purple-50 transition"
-      >
-        <Plus size={16} /> Add New Task
-      </button>
-
-      {/* Add Task Form */}
-      {showForm && (
-        <form onSubmit={handleAddTask} className="bg-white rounded-xl p-4 border border-purple-100 shadow-sm space-y-3">
-          <input type="text" placeholder="Task title *"
-            value={form.title} onChange={e => setForm({ ...form, title: e.target.value })}
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-400"
-          />
-          <input type="text" placeholder="Description"
-            value={form.description} onChange={e => setForm({ ...form, description: e.target.value })}
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-400"
-          />
-          <div className="flex gap-3">
-            <select value={form.priority} onChange={e => setForm({ ...form, priority: e.target.value })}
-              className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-400">
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-            </select>
-            <input type="date" value={form.duedate} onChange={e => setForm({ ...form, duedate: e.target.value })}
-              className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-400"
-            />
-          </div>
-          <div className="flex gap-2 justify-end">
-            <button type="button" onClick={() => setShowForm(false)} className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">Cancel</button>
-            <button type="submit" disabled={submitting} className="px-4 py-2 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50">
-              {submitting ? 'Adding...' : 'Add Task'}
-            </button>
-          </div>
-        </form>
-      )}
-
       {/* Task Cards */}
       <div className="space-y-3">
         {sortedTasks.length === 0 && (
@@ -156,7 +102,10 @@ const PendingTasks = () => {
                   </div>
                 </div>
               </div>
-              <button onClick={() => handleDelete(task._id)} className="text-gray-300 hover:text-red-400 text-xl shrink-0">×</button>
+              {/* ✅ Sirf admin delete kar sakta hai */}
+              {isAdmin && (
+                <button onClick={() => handleDelete(task._id)} className="text-gray-300 hover:text-red-400 text-xl shrink-0">×</button>
+              )}
             </div>
           </div>
         ))}

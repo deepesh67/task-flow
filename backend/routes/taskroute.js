@@ -1,8 +1,11 @@
 import express from 'express';
 import authMiddleware from '../middleware/auth.js';
-import { createTask, deleteTask, getTask, getTaskById, updateTask } from './../controllers/taskcontroller.js';
+import { createTask, deleteTask, getTask, getTaskById, updateTask, getEmployees } from './../controllers/taskcontroller.js';
 
 const taskrouter = express.Router();
+
+// ✅ Employees list — Admin ke liye
+taskrouter.get('/employees', authMiddleware, getEmployees);
 
 // GET all tasks & POST new task
 taskrouter.route('/gp')

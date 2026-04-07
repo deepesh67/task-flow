@@ -4,7 +4,7 @@ import { User, Mail, Lock, LogOut, ShieldAlert, ChevronLeft, CheckCircle, Eye, E
 import axios from 'axios'
 
 const ProfileSettings = () => {
-  const { } = useOutletContext() || {}
+  const { setUser } = useOutletContext() || {}
   const navigate = useNavigate()
 
   const storedUser = JSON.parse(localStorage.getItem('currentUser') || '{}')
@@ -37,6 +37,7 @@ const ProfileSettings = () => {
       )
       const updated = { ...storedUser, name, email }
       localStorage.setItem('currentUser', JSON.stringify(updated))
+      setUser && setUser(updated)
       setProfileSuccess(true)
       setTimeout(() => setProfileSuccess(false), 3000)
     } catch (err) {
@@ -51,14 +52,15 @@ const ProfileSettings = () => {
       return setPasswordError('All fields are required')
     if (newPassword !== confirmPassword)
       return setPasswordError('New passwords do not match')
-    if (newPassword.length < 6)
-      return setPasswordError('Password must be at least 6 characters')
+    if (newPassword.length < 8)
+      return setPasswordError('Password must be at least 8 characters')
     setPasswordSaving(true)
     setPasswordError('')
     try {
       const token = localStorage.getItem('token')
+      // ✅ backend wali keys — currentpassword, newpassword
       await axios.put('http://localhost:4000/api/user/password',
-        { currentPassword, newPassword },
+        { currentpassword: currentPassword, newpassword: newPassword },
         { headers: { Authorization: `Bearer ${token}` } }
       )
       setCurrentPassword('')
@@ -79,12 +81,11 @@ const ProfileSettings = () => {
     navigate('/login', { replace: true })
   }
 
-  const avatarUrl = storedUser.avatar ||
-    `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'U')}&background=a855f7&color=fff`
+  const getInitials = (n) =>
+    n?.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || 'U'
 
   return (
     <div className="space-y-4">
-      {/* Header */}
       <div className="flex items-center gap-3">
         <button
           onClick={() => navigate('/')}
@@ -95,10 +96,11 @@ const ProfileSettings = () => {
         </button>
       </div>
 
-      {/* Page Title */}
       <div className="flex items-center gap-3">
         <div className="relative">
-          <img src={avatarUrl} alt="avatar" className="w-14 h-14 rounded-2xl shadow-md" />
+          <div className="w-14 h-14 rounded-2xl shadow-md bg-gradient-to-br from-fuchsia-500 to-purple-600 flex items-center justify-center text-white font-bold text-xl">
+            {getInitials(name)}
+          </div>
           <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white" />
         </div>
         <div>
@@ -107,17 +109,13 @@ const ProfileSettings = () => {
         </div>
       </div>
 
-      {/* Cards Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-
-        {/* Personal Information */}
         <div className="bg-white rounded-2xl p-5 border border-purple-100 shadow-sm space-y-4">
           <h2 className="text-base font-semibold text-gray-800 flex items-center gap-2">
             <User className="w-4 h-4 text-purple-500" />
             Personal Information
           </h2>
 
-          {/* Name */}
           <div className="relative">
             <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
               <User className="w-4 h-4 text-gray-400" />
@@ -127,11 +125,11 @@ const ProfileSettings = () => {
               value={name}
               onChange={e => setName(e.target.value)}
               placeholder="Full name"
+              autoComplete="name"
               className="w-full pl-9 pr-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition"
             />
           </div>
 
-          {/* Email */}
           <div className="relative">
             <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
               <Mail className="w-4 h-4 text-gray-400" />
@@ -141,6 +139,7 @@ const ProfileSettings = () => {
               value={email}
               onChange={e => setEmail(e.target.value)}
               placeholder="Email address"
+              autoComplete="email"
               className="w-full pl-9 pr-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition"
             />
           </div>
@@ -165,14 +164,12 @@ const ProfileSettings = () => {
           </button>
         </div>
 
-        {/* Security */}
         <div className="bg-white rounded-2xl p-5 border border-purple-100 shadow-sm space-y-4">
           <h2 className="text-base font-semibold text-gray-800 flex items-center gap-2">
             <Lock className="w-4 h-4 text-purple-500" />
             Security
           </h2>
 
-          {/* Current Password */}
           <div className="relative">
             <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
               <Lock className="w-4 h-4 text-gray-400" />
@@ -182,6 +179,7 @@ const ProfileSettings = () => {
               value={currentPassword}
               onChange={e => setCurrentPassword(e.target.value)}
               placeholder="Current Password"
+              autoComplete="current-password"
               className="w-full pl-9 pr-10 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition"
             />
             <button onClick={() => setShowCurrent(p => !p)} className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600">
@@ -189,7 +187,6 @@ const ProfileSettings = () => {
             </button>
           </div>
 
-          {/* New Password */}
           <div className="relative">
             <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
               <Lock className="w-4 h-4 text-gray-400" />
@@ -199,6 +196,7 @@ const ProfileSettings = () => {
               value={newPassword}
               onChange={e => setNewPassword(e.target.value)}
               placeholder="New Password"
+              autoComplete="new-password"
               className="w-full pl-9 pr-10 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition"
             />
             <button onClick={() => setShowNew(p => !p)} className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600">
@@ -206,7 +204,6 @@ const ProfileSettings = () => {
             </button>
           </div>
 
-          {/* Confirm Password */}
           <div className="relative">
             <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
               <Lock className="w-4 h-4 text-gray-400" />
@@ -216,6 +213,7 @@ const ProfileSettings = () => {
               value={confirmPassword}
               onChange={e => setConfirmPassword(e.target.value)}
               placeholder="Confirm Password"
+              autoComplete="new-password"
               className="w-full pl-9 pr-10 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition"
             />
             <button onClick={() => setShowConfirm(p => !p)} className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600">
@@ -242,7 +240,6 @@ const ProfileSettings = () => {
             ) : 'Change Password'}
           </button>
 
-          {/* Danger Zone */}
           <div className="pt-2 border-t border-gray-100">
             <p className="text-xs font-semibold text-red-500 flex items-center gap-1.5 mb-2">
               <ShieldAlert className="w-3.5 h-3.5" /> Danger Zone

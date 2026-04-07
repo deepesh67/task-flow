@@ -17,7 +17,14 @@ const taskSchema = new mongoose.Schema({
   duedate: {
     type: Date,
   },
+  // ✅ Kisne banaya task (Admin)
   owner: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "user",
+    required: true,
+  },
+  // ✅ Kisko assign kiya task (Employee)
+  assignedTo: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "user",
     required: true,
