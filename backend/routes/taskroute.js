@@ -4,7 +4,7 @@ import { createTask, deleteTask, getTask, getTaskById, updateTask, getEmployees 
 
 const taskrouter = express.Router();
 
-// ✅ Employees list — Admin ke liye
+// ✅ Employees list — For admin
 taskrouter.get('/employees', authMiddleware, getEmployees);
 
 // GET all tasks & POST new task

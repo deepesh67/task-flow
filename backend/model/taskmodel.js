@@ -17,13 +17,13 @@ const taskSchema = new mongoose.Schema({
   duedate: {
     type: Date,
   },
-  // ✅ Kisne banaya task (Admin)
+  // ✅ Task creator (Admin)
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "user",
     required: true,
   },
-  // ✅ Kisko assign kiya task (Employee)
+  // ✅ Assigned to (Employee)
   assignedTo: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "user",

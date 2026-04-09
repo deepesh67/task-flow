@@ -132,7 +132,7 @@ const Login = ({ onSubmit, onSwitchMode }) => {
         </>
       )}
 
-      {/* ✅ Forgot Password — Email daalo */}
+      {/* ✅ Forgot Password — Enter email */}
       {step === 'forgot' && (
         <>
           <h2 className="text-2xl font-bold text-gray-800 text-center mb-1">Forgot Password</h2>

@@ -41,7 +41,7 @@ const Navbar = ({user, onLogout}) => {
             <button onClick={handleMenuToggle} className='flex items-center gap-2 px-3 py-2 rounded-full cursor-pointer hover:bg-purple-50 transition-colors duration-300 border border-transparent hover:border-purple-200'>
               <div className='relative'>
 
-                {/* ✅ Ab sirf initials dikhega — naam badlega toh turant update hoga */}
+                {/* ✅ Only initials are displayed — instantly updates on name change */}
                 <div className='w-9 h-9 flex items-center justify-center rounded-full bg-gradient-to-br from-fuchsia-500 to-purple-600 text-white font-semibold shadow-md'>
                   {user?.name?.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || 'U'}
                 </div>

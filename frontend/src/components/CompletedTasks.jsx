@@ -82,7 +82,7 @@ const CompletedTasks = () => {
           <div key={task._id} className="bg-white rounded-xl p-4 border border-green-100 shadow-sm">
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-start gap-3 flex-1 min-w-0">
-                {/* ✅ Sirf admin uncomplete kar sakta hai */}
+                {/* ✅ Only admin can mark as pending */}
                 {isAdmin ? (
                   <button onClick={() => handleUncomplete(task)} className="mt-0.5 shrink-0" title="Mark as pending">
                     <div className="w-5 h-5 rounded-full border-2 border-green-500 bg-green-500 flex items-center justify-center">
@@ -110,7 +110,7 @@ const CompletedTasks = () => {
                   </div>
                 </div>
               </div>
-              {/* ✅ Sirf admin delete kar sakta hai */}
+              {/* ✅ Only admin can delete */}
               {isAdmin && (
                 <button onClick={() => handleDelete(task._id)} className="text-gray-300 hover:text-red-400 text-xl shrink-0">×</button>
               )}

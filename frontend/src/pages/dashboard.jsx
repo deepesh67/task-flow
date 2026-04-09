@@ -36,7 +36,7 @@ const AdminDashboard = () => {
   useEffect(() => { fetchData() }, [])
 
   const handleCreateTask = async () => {
-    if (!taskForm.title || !taskForm.assignedTo) return alert('Title aur Employee select karo')
+    if (!taskForm.title || !taskForm.assignedTo) return alert('Please enter title and select an employee')
     try {
       const res = await fetch('http://localhost:4000/api/tasks/gp', {
         method: 'POST', headers,
@@ -51,7 +51,7 @@ const AdminDashboard = () => {
   }
 
   const handleDeleteTask = async (id) => {
-    if (!confirm('Delete karna chahte ho?')) return
+    if (!confirm('Are you sure you want to delete this task?')) return
     try {
       await fetch(`http://localhost:4000/api/tasks/gp/${id}`, { method: 'DELETE', headers })
       setTasks(prev => prev.filter(t => t._id !== id))
@@ -70,7 +70,7 @@ const AdminDashboard = () => {
   }
 
   const handleCreateEmployee = async () => {
-    if (!empForm.name || !empForm.email || !empForm.password) return alert('Sab fields bharo')
+    if (!empForm.name || !empForm.email || !empForm.password) return alert('Please fill in all fields')
     try {
       const res = await fetch('http://localhost:4000/api/user/create-employee', {
         method: 'POST', headers,
@@ -81,12 +81,12 @@ const AdminDashboard = () => {
       setEmpForm({ name: '', email: '', password: '' })
       setShowEmpForm(false)
       fetchData()
-      alert('Employee ban gaya! ✅')
+      alert('Employee created successfully! ✅')
     } catch (err) { alert(err.message) }
   }
 
   const handleDeleteEmployee = async (id) => {
-    if (!confirm('Employee delete karna chahte ho?')) return
+    if (!confirm('Are you sure you want to delete this employee?')) return
     try {
       const res = await fetch(`http://localhost:4000/api/user/delete-employee/${id}`, {
         method: 'DELETE', headers
@@ -163,7 +163,7 @@ const AdminDashboard = () => {
 
           {showTaskForm && (
             <div className="bg-white border border-gray-200 rounded-2xl p-5 mb-6 shadow-sm">
-              <h3 className="font-semibold text-gray-700 mb-4">Task Create Karo</h3>
+              <h3 className="font-semibold text-gray-700 mb-4">Create New Task</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <input
                   className="border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-purple-300"
@@ -176,7 +176,7 @@ const AdminDashboard = () => {
                   value={taskForm.assignedTo}
                   onChange={e => setTaskForm({ ...taskForm, assignedTo: e.target.value })}
                 >
-                  <option value="">Employee select karo *</option>
+                  <option value="">Select Employee *</option>
                   {employees.map(emp => (
                     <option key={emp._id} value={emp._id}>{emp.name} ({emp.email})</option>
                   ))}
@@ -215,7 +215,7 @@ const AdminDashboard = () => {
           )}
 
           <div className="space-y-3">
-            {tasks.length === 0 && <div className="text-center text-gray-400 py-12">Koi task nahi hai abhi</div>}
+            {tasks.length === 0 && <div className="text-center text-gray-400 py-12">No tasks available</div>}
             {tasks.map(task => (
               <div key={task._id} className="bg-white border border-gray-200 rounded-2xl p-4 flex items-start gap-4 shadow-sm hover:shadow-md transition">
                 <button onClick={() => handleToggleTask(task)} className="mt-1 flex-shrink-0">
@@ -262,7 +262,7 @@ const AdminDashboard = () => {
 
           {showEmpForm && (
             <div className="bg-white border border-gray-200 rounded-2xl p-5 mb-6 shadow-sm">
-              <h3 className="font-semibold text-gray-700 mb-4">New Employee Add Karo</h3>
+              <h3 className="font-semibold text-gray-700 mb-4">Add New Employee</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <input
                   className="border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-purple-300"
@@ -297,7 +297,7 @@ const AdminDashboard = () => {
           )}
 
           <div className="space-y-3">
-            {employees.length === 0 && <div className="text-center text-gray-400 py-12">Koi employee nahi hai abhi</div>}
+            {employees.length === 0 && <div className="text-center text-gray-400 py-12">No employees available</div>}
             {employees.map(emp => (
               <div key={emp._id} className="bg-white border border-gray-200 rounded-2xl p-4 flex items-center justify-between shadow-sm hover:shadow-md transition">
                 <div className="flex items-center gap-3">

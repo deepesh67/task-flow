@@ -58,7 +58,7 @@ const ProfileSettings = () => {
     setPasswordError('')
     try {
       const token = localStorage.getItem('token')
-      // ✅ backend wali keys — currentpassword, newpassword
+      // ✅ backend keys — currentpassword, newpassword
       await axios.put('http://localhost:4000/api/user/password',
         { currentpassword: currentPassword, newpassword: newPassword },
         { headers: { Authorization: `Bearer ${token}` } }

@@ -296,7 +296,7 @@ export async function resetPassword(req, res) {
     }
 }
 
-// ✅ Admin — Employee banao
+// ✅ Admin — Create employee
 export async function createEmployee(req, res) {
     const { name, email, password } = req.body;
     if (!name || !email || !password) {
@@ -329,7 +329,7 @@ export async function createEmployee(req, res) {
     }
 }
 
-// ✅ Admin — Employee delete karo
+// ✅ Admin — Delete employee
 export async function deleteEmployee(req, res) {
     try {
         if (req.user.role !== 'admin') {

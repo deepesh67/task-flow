@@ -102,7 +102,7 @@ const PendingTasks = () => {
                   </div>
                 </div>
               </div>
-              {/* ✅ Sirf admin delete kar sakta hai */}
+              {/* ✅ Only admin can delete */}
               {isAdmin && (
                 <button onClick={() => handleDelete(task._id)} className="text-gray-300 hover:text-red-400 text-xl shrink-0">×</button>
               )}

@@ -13,7 +13,7 @@ const Dashboard = () => {
   const { tasks = [], refreshTasks } = useOutletContext()
   const [filter, setFilter] = useState('All')
 
-  // ✅ Employee ko add/delete nahi karne denge
+  // ✅ Employees cannot add/delete
   const currentUser = JSON.parse(localStorage.getItem('currentUser'))
   const isAdmin = currentUser?.role === 'admin'
 
@@ -126,7 +126,7 @@ const Dashboard = () => {
                   <span>🕐 Created {new Date(task.createdAt).toLocaleDateString()}</span>
                 </div>
               </div>
-              {/* ✅ Sirf admin delete kar sakta hai */}
+              {/* ✅ Only admin can delete */}
               {isAdmin && (
                 <button onClick={() => handleDelete(task._id)} className="text-gray-300 hover:text-red-400 text-lg shrink-0">×</button>
               )}

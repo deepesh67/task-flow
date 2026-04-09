@@ -1,10 +1,10 @@
 import Task from "../model/taskmodel.js";
 import userModel from "../model/userMODEL.js";
 
-// ✅ Admin — Task banao aur kisi employee ko assign karo
+// ✅ Admin — Create a task and assign it to an employee
 export const createTask = async (req, res) => {
     try {
-        // Sirf admin task bana sakta hai
+        // Only admin can create tasks
         if (req.user.role !== 'admin') {
             return res.status(403).json({ success: false, message: "Only admin can create tasks" });
         }
@@ -33,18 +33,18 @@ export const createTask = async (req, res) => {
     }
 };
 
-// ✅ Tasks fetch karo — Admin ko sab, Employee ko sirf apne
+// ✅ Fetch tasks — Admin sees all, Employee sees only theirs
 export const getTask = async (req, res) => {
     try {
         let tasks;
         if (req.user.role === 'admin') {
-            // Admin — sab tasks dekhe with employee info
+            // Admin — view all tasks with employee info
             tasks = await Task.find()
                 .populate('assignedTo', 'name email')
                 .populate('owner', 'name')
                 .sort({ createdAt: -1 });
         } else {
-            // Employee — sirf apne assigned tasks
+            // Employee — only their assigned tasks
             tasks = await Task.find({ assignedTo: req.user.id })
                 .sort({ createdAt: -1 });
         }
@@ -72,13 +72,13 @@ export const getTaskById = async (req, res) => {
     }
 }
 
-// ✅ Task update — Admin sab kuch badal sakta hai, Employee sirf complete kar sakta hai
+// ✅ Task update — Admin can update all fields, Employee can only update completed status
 export const updateTask = async (req, res) => {
     try {
         let updated;
 
         if (req.user.role === 'admin') {
-            // Admin — sab kuch update kar sakta hai
+            // Admin — can update all fields
             const data = { ...req.body };
             if (data.completed !== undefined) {
                 data.completed = data.completed === 'yes' || data.completed === true;
@@ -89,7 +89,7 @@ export const updateTask = async (req, res) => {
                 { new: true, runValidators: true }
             );
         } else {
-            // Employee — sirf completed status badal sakta hai
+            // Employee — can only update completed status
             const { completed } = req.body;
             updated = await Task.findOneAndUpdate(
                 { _id: req.params.id, assignedTo: req.user.id },
@@ -106,7 +106,7 @@ export const updateTask = async (req, res) => {
     }
 }
 
-// ✅ Task delete — Sirf Admin
+// ✅ Task delete — Admin only
 export const deleteTask = async (req, res) => {
     try {
         if (req.user.role !== 'admin') {
@@ -121,7 +121,7 @@ export const deleteTask = async (req, res) => {
     }
 }
 
-// ✅ Admin — Saare employees ki list
+// ✅ Admin — List of all employees
 export const getEmployees = async (req, res) => {
     try {
         if (req.user.role !== 'admin') {
